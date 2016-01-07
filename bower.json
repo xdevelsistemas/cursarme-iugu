@@ -1,0 +1,19 @@
+{
+  "name": "carga-boleto",
+  "description": "",
+  "main": "",
+  "authors": [
+    "clayton@xdevel.com.br <clayton@xdevel.com.br>"
+  ],
+  "license": "MIT",
+  "moduleType": [],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "public/lib",
+    "test",
+    "tests"
+  ]
+}
