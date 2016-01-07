@@ -2,6 +2,9 @@
 const iugu = require('iugu');
 const _ = require('lodash');
 const multaPercentual = 2;
+let format = require('string-format');
+format.extend(String.prototype);
+
 
 // exemplo de boleto
 //{
@@ -200,7 +203,7 @@ let createInvoice = (unidade,boleto) => {
         email: getEmail(), //todo colocar email na view
         due_date: getVencimento(),
         items: itensInvoice,
-        notification_url: 'http://localhost', //todo ajustar o endpoint para processar retorno
+        notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela), //todo ajustar o endpoint para processar retorno
         fines: "true",
         late_payment_fine: multaPercentual.toString(),
         discount_cents: "0",

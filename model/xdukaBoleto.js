@@ -6,6 +6,7 @@ const iuguInvoice = require('./iuguInvoice');
 const _ = require('lodash');
 let format = require('string-format');
 format.extend(String.prototype);
+let  reErrStatus = /^[4|5]/;
 
 
 let unidades = {

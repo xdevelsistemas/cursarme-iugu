@@ -5,7 +5,7 @@ const _ = require('lodash');
 const request = require('sync-request');
 const Promise = require("bluebird");
 
-let  reErrStatus = /^[4|5]/;
+
 
 
 
