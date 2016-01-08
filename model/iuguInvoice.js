@@ -211,7 +211,7 @@ let createInvoice = (unidade,boleto) => {
     itensInvoice = addValorAbatimento(itensInvoice);
 
     let objectInvoice = {
-        email: 'clayton@xdevel.com.br', //getEmail(), //todo colocar email na view
+        email: getEmail(),
         due_date: getVencimento(),
         items: itensInvoice,
         notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),

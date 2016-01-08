@@ -19,6 +19,18 @@
   "dependencies": {
     "bootstrap": "~3.3.6",
     "angular": "~1.4.8",
-    "angular-resource": "~1.4.8"
+    "angular-resource": "~1.4.8",
+    "angular-route": "~1.4.8",
+    "angular-loader": "~1.4.8",
+    "angular-mocks": "*",
+    "html5-boilerplate": "~5.2.0",
+    "lodash": "~3.10.1",
+    "ngprogress": "~1.1.2",
+    "semantic": "semantic-ui#*",
+    "angular-semantic-ui": "~0.0.3",
+    "angular-input-masks": "~2.1.1"
+  },
+  "resolutions": {
+    "angular": "~1.4.8"
   }
 }
