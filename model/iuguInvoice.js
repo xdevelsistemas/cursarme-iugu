@@ -57,6 +57,17 @@ let dataAtualFormatada = (data) => {
 };
 
 
+let getInvoice = (unidade,invoiceId) => {
+    let iuguUnidade = iugu(unidade.key,'v1');
+
+    if (invoiceId){
+        return iuguUnidade.invoices.retrieve(invoiceId);
+    }else{
+        return Promise.resolve(null);
+    }
+};
+
+
 let createInvoice = (unidade,boleto) => {
     let iuguUnidade = iugu(unidade.key,'v1');
     const today = new Date();
@@ -244,7 +255,8 @@ let cancelInvoice = (unidade,invoiceId) => {
 
 module.exports = {
     createInvoice : createInvoice,
-    cancelInvoice : cancelInvoice
+    cancelInvoice : cancelInvoice,
+    getInvoice : getInvoice
 };
 
 
