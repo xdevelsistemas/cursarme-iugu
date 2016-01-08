@@ -169,18 +169,20 @@ let payInvoice = (transactId,payValue,payDate) =>
         .then((invoiceData) => {
             if (invoiceData && invoiceData.length > 0 ){
                 let result = invoiceData[0];
-                let  msg = ('Pagamento realizado via Boleto do Iugu, valor de {} e Data de Pagamento de {} na parcela {}').format(payValue,payDate, result.Parcela);
+
+                let valorPago = payValue / 100;
+                let  msg = ('Pagamento realizado via Boleto do Iugu, valor de {} e Data de Pagamento de "{}" na parcela {}').format(valorPago.toString().replace('.',','),payDate.toString(), result.Parcela);
 
                 return new mssql.Request()
                     .query(`insert into cntMovimentoLog
                 (CodUnidade, CodMovimento, Data, IDUsuário, LogMensagem)
                 VALUES  ({0},{1},getdate(), 6584 ,'{5}');
                 update cntMovimentoParcela set
-                PagoValor = PagoValor + {3},
-                PagoData  = {4}
+                PagoValor = {3},
+                PagoData  = CONVERT(char(30), '{4}',126)
                 where CodUnidade = {0}
                 and CodMovimento = {1}
-                and Parcela = {2}`.format(result.CodUnidade,result.CodMovimento,result.Parcela,payValue,payDate,msg))
+                and Parcela = {2}`.format(result.CodUnidade,result.CodMovimento,result.Parcela,valorPago,payDate.toISOString(),msg))
             }else{
                 return Promise.reject(Error("a transação '{} não pode ser processada".format(transactId)));
             }

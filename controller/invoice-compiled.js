@@ -40,6 +40,18 @@ module.exports = () => {
         }
     };
 
+    controller.invoiceDueDate = (req, res) => {
+
+        if (parcelas.getUnidade(req.params.unidade)) {
+            res.render('invoice', { unidade: req.params.unidade,
+                codmovimento: req.params.codmovimento,
+                parcela: req.params.parcela
+            });
+        } else {
+            res.render('error', { error: { message: 'pagina nao encontrada', status: '404' } });
+        }
+    };
+
     controller.invoiceStatusChange = (req, res) => {
 
         //{
@@ -51,12 +63,13 @@ module.exports = () => {
         //    "event": "invoice.status_changed"
         //}
 
-        if (req.body.data && req.body.data.id && req.body.data.event && req.body.data.status && req.body.data.event == 'invoice.status_changed' && req.body.data.status == 'paid' && parcelas.getUnidade(req.params.unidade)) {
+        if (req.body.data && req.body.data.id && req.body.event && req.body.data.status && req.body.event == 'invoice.status_changed' && req.body.data.status == 'paid' && parcelas.getUnidade(req.params.unidade)) {
 
             let invoiceid = req.body.data.id;
             let unidade = parcelas.getUnidade(req.params.unidade);
 
-            iuguInvoice.getInvoice(unidade, invoiceid).then(invoice => {
+            iuguInvoice.getInvoice(unidade, invoiceid).then(response => {
+                let invoice = response.body;
                 if (invoice.status === 'paid') {
                     //total_paid_cents ???
                     let paidValue = invoice.paid_cents;
@@ -74,6 +87,8 @@ module.exports = () => {
                     res.status(500).json({ msg: err });
                 }
             });
+        } else {
+            res.status(400).json({ msg: "informacao incompleta" });
         }
     };
 

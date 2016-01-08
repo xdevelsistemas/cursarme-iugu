@@ -214,7 +214,8 @@ let createInvoice = (unidade,boleto) => {
         email: getEmail(), //todo colocar email na view
         due_date: getVencimento(),
         items: itensInvoice,
-        notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela), //todo ajustar o endpoint para processar retorno
+        notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),
+        expired_url: 'https://cursarmeboleto.herokuapp.com/boletos/atrasado/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela), //todo ajustar a view de boleto atrasado para regerar
         fines: "true",
         late_payment_fine: multaPercentual.toString(),
         discount_cents: "0",
