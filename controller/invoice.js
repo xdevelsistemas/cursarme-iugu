@@ -52,7 +52,7 @@ module.exports = () => {
 
 
 
-    constroller.invoiceStatusChange = (req,res) => {
+    controller.invoiceStatusChange = (req,res) => {
 
         //{
         //    "data": {
@@ -108,7 +108,7 @@ module.exports = () => {
 
 
     controller.testreturn = (req,res) => {
-        res.send(ok);
+        res.send('ok');
     };
 
 
