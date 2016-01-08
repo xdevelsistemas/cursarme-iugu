@@ -162,7 +162,7 @@ let createInvoice = (unidade,boleto) => {
         let valor = Number(boleto.BolsaCondicional);
         valor  = valor > 0 ? valor *(-1) : valor;
 
-        if(valor != 0){
+        if(valor != 0 && !isLate()){
             list.push({
                 description: "Desconto Condicionado ao Vencimento: [{}]".format(boleto.BolsaCondicionalMotivo),
                 quantity: "1",
@@ -211,7 +211,7 @@ let createInvoice = (unidade,boleto) => {
     itensInvoice = addValorAbatimento(itensInvoice);
 
     let objectInvoice = {
-        email: getEmail(), //todo colocar email na view
+        email: 'clayton@xdevel.com.br', //getEmail(), //todo colocar email na view
         due_date: getVencimento(),
         items: itensInvoice,
         notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),
@@ -225,13 +225,11 @@ let createInvoice = (unidade,boleto) => {
     };
 
     let calcTotal = (itens) => {
-      if (itens.length > 1) {
-          return itens.reduce((a,b) => Number(a.price_cents) + Number(b.price_cents));
-      } else if (itens.length = 1) {
-          return Number(_.first(itens).price_cents);
-      }else{
-          return 0;
-      }
+        if (itens.length > 0) {
+            return _.sum(itens,'price_cents');
+        }else {
+            return 0;
+        }
     };
 
     if (calcTotal(itensInvoice) > 0) {
