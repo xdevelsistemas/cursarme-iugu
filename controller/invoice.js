@@ -55,7 +55,7 @@ module.exports = () => {
         if (parcelas.getUnidade(req.params.unidade)) {
             res.render('invoice',
                 {   unidade : req.params.unidade ,
-                    codmovimento : req.params.codmovimento,
+                    codmovimento : req.params.movimento,
                     parcela : req.params.parcela
                 })
         }else {
@@ -142,7 +142,7 @@ module.exports = () => {
 
 
             parcelas.invoiceControllerCall(codUnidade,codMovimento,parcela)
-                .then(() => res.status(201).json("transacao criada"))
+                .then((url) => res.status(201).send({url : url }))
                 .catch((err) => {
                     if (err.message){
                         res.status(500).send(err.message);

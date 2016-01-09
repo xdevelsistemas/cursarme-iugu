@@ -211,11 +211,11 @@ let createInvoice = (unidade,boleto) => {
     itensInvoice = addValorAbatimento(itensInvoice);
 
     let objectInvoice = {
-        email: getEmail(),
+        email: 'clayton@xdevel.com.br',  // getEmail(), //todo voltar a getEmail quando for para producao
         due_date: getVencimento(),
         items: itensInvoice,
-        notification_url: 'https://cursarmeboleto.herokuapp.com/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),
-        expired_url: 'https://cursarmeboleto.herokuapp.com/boletos/atrasado/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela), //todo ajustar a view de boleto atrasado para regerar
+        notification_url: 'http://boletocpf.cursar.me/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),
+        expired_url: 'http://boletocpf.cursar.me/boletos/atrasado/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela), //todo ajustar a view de boleto atrasado para regerar
         fines: "true",
         late_payment_fine: multaPercentual.toString(),
         discount_cents: "0",

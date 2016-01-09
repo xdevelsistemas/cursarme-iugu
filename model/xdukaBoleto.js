@@ -123,7 +123,7 @@ let addTransaction = (transactId,transactUrl,CodUnidade,CodMovimento,Parcela) =>
                     throw err;
                 });
         })
-        .then((result) => { mssql.close(); return Promise.resolve(result)})
+        .then((result) => { mssql.close(); return Promise.resolve(transactUrl)})
         .catch((err) => { mssql.close(); throw err;});
 
 

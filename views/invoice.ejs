@@ -1,8 +1,78 @@
-<html>
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="xDukaBoletos" class="no-js"> <!--<![endif]-->
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Boletos</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/lib/html5-boilerplate/dist/css/normalize.css">
+    <link rel="stylesheet" href="/lib/html5-boilerplate/dist/css/main.css">
+    <link rel="stylesheet" href="/lib/semantic/dist/semantic.css">
+    <link rel="stylesheet" href="/lib/semantic/dist/components/table.min.css">
+    <link rel="stylesheet" href="/lib/semantic/dist/components/accordion.min.css">
+    <link rel="stylesheet" href="/lib/ngprogress/ngProgress.css">
+    <link rel="stylesheet" href="/stylesheets/app.css">
+    <script src="/lib/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
 </head>
 <body>
 
+<!--&lt;!&ndash;[if lt IE 7]>-->
+<!--<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>-->
+<!--<![endif]&ndash;&gt;-->
+<!--{   unidade : req.params.unidade ,-->
+<!--codmovimento : req.params.movimento,-->
+<!--parcela : req.params.parcela-->
+<!--}-->
+<% if (unidade && codmovimento && parcela ) { %>
+
+<div id="g1" ng-controller="regeraBoletoController">
+    <div class="ui one item menu">
+        <a class="active item">
+            <i class="clock icon"></i> Boleto expirado
+        </a>
+    </div>
+    <div class="ui segment page grid">
+        <div class="eight centered column">
+            <div class="ui negative message">
+                <i class="close icon"></i>
+                <div class="header">
+                    Opa, seu boleto expirou
+                </div>
+                <p>Clique no botão abaixo para regerar com a data de vencimento do dia.
+                </p>
+            </div>
+            <form class="ui form segment">
+                <div class="sixteen centered column" ng-click="click(<%= unidade %>, <%= codmovimento %> ,<%= parcela %>)">
+                    <div class="fluid ui submit button negative ">Regerar</div>
+                </div>
+            </form>
+            <a ng-show="valid" target="_blank" href="{{boleto}}" class="fluid ui submit button positive">Visualizar o Boleto</a>
+        </div>
+    </div>
+</div>
+
+<% } %>
+
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+-->
+<script src="/lib/angular/angular.min.js"></script>
+<script src="/lib/lodash/lodash.min.js"></script>
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/semantic/dist/semantic.min.js"></script>
+<script src="/lib/semantic/dist/components/accordion.min.js"></script>
+<script src="/lib/angular-route/angular-route.js"></script>
+<script src="/lib/angular-resource/angular-resource.min.js"></script>
+<script src="/lib/angular-route/angular-route.min.js"></script>
+<script src="/lib/angular-semantic-ui/dist/angular-semantic-ui.js"></script>
+<script src="/lib/angular-input-masks/angular-input-masks.br.min.js"></script>
+<script src="/lib/ngprogress/build/ngProgress.min.js"></script>
+<script src="/javascripts/app/directives/accordion.js"></script>
+<script src="/javascripts/app/app.js"></script>
+<script src="/javascripts/app/controllers/regeraBoletoController.js"></script>
 </body>
 </html>
-
