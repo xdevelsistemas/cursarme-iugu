@@ -25,12 +25,15 @@
     "angular-mocks": "*",
     "html5-boilerplate": "~5.2.0",
     "lodash": "~3.10.1",
-    "ngprogress": "~1.1.2",
-    "semantic": "semantic-ui#*",
+    "ngprogress": "~1.0.7",
+    "semantic": "~2.1",
     "angular-semantic-ui": "~0.0.3",
-    "angular-input-masks": "~2.1.1"
+    "angular-input-masks": "~1.4.0"
   },
   "resolutions": {
     "angular": "~1.4.8"
   }
 }
+
+
+

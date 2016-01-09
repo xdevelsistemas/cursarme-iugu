@@ -1,10 +1,9 @@
-var format = require('string-format');
-var reqPro = require("request-promise");
-var proxy  = require("../config/proxies");
-var extend = require('extend');
+const format = require('string-format');
+const reqPro = require("request-promise");
+const extend = require('extend');
 
 
-var methods = {
+const methods = {
     GET : "GET",
     POST : "POST",
     PUT : "PUT",
@@ -12,15 +11,7 @@ var methods = {
 };
 
 
-
-module.exports  = {
-    apiCall : apiCall ,
-    method : methods ,
-    apiGetErr : apiGetErr
-};
-
-
-function apiGetErr (error,res){
+apiGetErr =  (error,res) => {
     var msgerr = {};
 
 
@@ -49,13 +40,13 @@ function apiGetErr (error,res){
 
     /*return res.status(!!error.statusCode?error.statusCode:500).json(!!error.error?msgerr:error.message);*/
     return res.status(!!error.statusCode?error.statusCode:500).json({statusCode: error.statusCode||500});
-}
+};
 
 
 
-function apiCall( entity , method ,reqData ) {
+apiCall =  (endpoint) => ( entity , method ,reqData ) => {
 
-    var uri = proxy.rest.api_endpoint;
+    var uri = endpoint;
     var body = null;
 
     if ((method === methods.GET || method === methods.DELETE)&&(reqData)){
@@ -66,6 +57,8 @@ function apiCall( entity , method ,reqData ) {
     }
 
     var options = {
+
+
         uri: uri ,
         //auth: {
         //    bearer: proxy.rest.api_token
@@ -88,4 +81,14 @@ function apiCall( entity , method ,reqData ) {
         return { data : data , status:  resp.statusCode};
     });
 
-}
+};
+
+
+
+module.exports = (endpoint,token) => {
+    return {
+        apiCall : apiCall(endpoint),
+        method : methods,
+        apiGetErr : apiGetErr
+    }
+};

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Boleto por CPF</title>
+    <form class="xdevfrm">
+        <input class="xdevcpf" type="text" name="cpf"/>
+        <input class="xdevsubmit" type="submit" name="enviar"/>
+    </form>
+</head>
+<body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.min.js"></script>-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.maskedinput/1.3.1/jquery.maskedinput.js"></script>
+<script type="application/javascript">
+    $(document).ready(function(){
+        $('.xdevcpf').mask('999.999.999-99');
+        $('.xdevfrm').submit(function(e) {
+            e.preventDefault();
+            var numCPF = $('.xdevcpf').val().replace(/\./g,'').replace(/\-/g,'').replace(/\//g,'');
+            window.open('https://cursarmeboleto.herokuapp.com/#/?numCPF='+ numCPF, "_blank");
+        });
+    });
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@ var app = express();
 //passport
 passport.use(new Strategy(
     (token, cb) => {
-      if (tokens.filter(d=>d == token).length > 0) {
+      if (tokens.main.filter(d=>d == token).length > 0) {
         return cb(null, {user: "root"});
       } else {
         return cb(null, false);
