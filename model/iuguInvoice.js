@@ -70,13 +70,17 @@ let getInvoice = (unidade,invoiceId) => {
 
 let createInvoice = (unidade,boleto) => {
     let iuguUnidade = iugu(unidade.key,'v1');
-    const today = new Date();
+    const today = new Date().setHours(0,0,0,0);
     const vencimento = new Date(boleto.DataVencimento);
     let itensInvoice = [];
 
 
     let isLate = () => {
-        var timeDiff = vencimento - today;
+        let _vencimento = vencimento;
+        let _today = today;
+        _vencimento.setHours(0,0,0,0);
+
+        var timeDiff = _vencimento - _today;
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         return diffDays < 0
     };
@@ -89,7 +93,7 @@ let createInvoice = (unidade,boleto) => {
 
     let addValorPrincipal = (list) => {
         list.push({
-            description: "{} Ref: {}/{} do Curso {}".format(boleto.TipoCobrança, boleto.intMesRef, boleto.AnoRef, boleto.Curso),
+            description: "Aluno(a) {} , {} Ref: {}/{} do Curso {}".format( boleto.NomeAluno, boleto.TipoCobrança, boleto.intMesRef, boleto.AnoRef, boleto.Curso),
             quantity: "1",
             price_cents: price_cents(boleto.ValorParcela).toString()
         });
@@ -191,7 +195,9 @@ let createInvoice = (unidade,boleto) => {
         return list;
     };
 
-    let getVencimento = () => dataAtualFormatada(isLate() ? today : vencimento);
+    let getVencimento = () => {
+      return dataAtualFormatada(isLate() ? today : vencimento);
+    };
 
     let getEmail = () => {
         let re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -211,7 +217,7 @@ let createInvoice = (unidade,boleto) => {
     itensInvoice = addValorAbatimento(itensInvoice);
 
     let objectInvoice = {
-        email: 'clayton@xdevel.com.br',  // getEmail(), //todo voltar a getEmail quando for para producao
+        email: getEmail(),
         due_date: getVencimento(),
         items: itensInvoice,
         notification_url: 'http://boletocpf.cursar.me/boletos/retorno/{}/{}/{}'.format(boleto.CodUnidade,boleto.CodMovimento,boleto.Parcela),
@@ -220,7 +226,7 @@ let createInvoice = (unidade,boleto) => {
         late_payment_fine: multaPercentual.toString(),
         discount_cents: "0",
         per_day_interest: "true",
-        ignore_due_email: "true",
+        ignore_due_email: "false",
         payable_with: 'bank_slip'
     };
 

@@ -37,12 +37,21 @@
     </div>
     <div class="ui segment page grid">
         <div class="eight centered column">
+            <% if (aviso) { %>
             <div class="ui negative message">
-                <i class="close icon"></i>
                 <div class="header">
                     Opa, seu boleto expirou
                 </div>
                 <p>Clique no botão abaixo para regerar com a data de vencimento do dia.
+                </p>
+            </div>
+            <%}%>
+            <div class="ui negative message" ng-show="erro">
+                <i class="ui icon close"></i>
+                <div class="header">
+                    Problemas ao regerar o boleto
+                </div>
+                <p>{{erro}}
                 </p>
             </div>
             <form class="ui form segment">

@@ -10,8 +10,8 @@ let  reErrStatus = /^[4|5]/;
 
 
 let unidades = {
-    cariacica : {query : 'CodUnidade = 215', key: '6a15282aac50d771d858e6b86c64bcbe'},
-    sao_mateus : {query : 'CodUnidade in (217,221)', key: '6d08dc26f116940a11b70d3111c66a53'}
+    cariacica : {query : 'CodUnidade = 215', key: '62bee72f9892240958e39dac0e344341'},
+    sao_mateus : {query : 'CodUnidade in (217,221)', key: '044325bfff65d13e8330641f39bbb830'}
 };
 
 let unidadesCodigos = {
@@ -47,9 +47,31 @@ let invoiceControllerCall = (codUnidade,codMovimento,parcela)  => {
     if (getUnidade(codUnidade)){
 
         return getInvoice(codUnidade,codMovimento,parcela)
-            .then((invoices)=> {
-                return  Promise.all([iuguInvoice.createInvoice(getUnidade(codUnidade), invoices[0]),
-                    iuguInvoice.cancelInvoice(getUnidade(codUnidade), invoices[0].xDevCobId)]
+            .then((invoices) => {
+                let invoice = _.first(invoices);
+
+                if (invoice){
+                    if (invoice.PagoValor > 0) throw new Error('Boleto foi pago');
+                    if (invoice.Cancelada ) throw new Error('Boleto foi cancelado');
+                    if (invoice.Ajuizada ) throw new Error('Boleto foi Ajuizado');
+                }else{
+                    throw new Error('Boleto não encontrado');
+                }
+
+                return Promise.all([Promise.resolve(invoice),iuguInvoice.getInvoice(codUnidade,invoice.xDevCobId)]);
+            })
+            .then((processed) => {
+                let invoice = processed[0];
+                let invoiceIugu = processed[1];
+
+                if ( invoiceIugu && invoiceIugu.status == 'paid') throw new Error('O Boleto já foi pago');
+                //if ( invoiceIugu && invoiceIugu.status == 'pending' && (new Date(invoiceIugu.due_date) > new Date().setHours(0,0,0,0) ) ) throw new Error('Já existe um boleto em atividade');
+
+                return Promise.resolve(invoice);
+            })
+            .then((invoice)=> {
+                return  Promise.all([iuguInvoice.createInvoice(getUnidade(codUnidade), invoice),
+                    iuguInvoice.cancelInvoice(getUnidade(codUnidade), invoice.xDevCobId)]
                 )
             })
             .then((processed) => {

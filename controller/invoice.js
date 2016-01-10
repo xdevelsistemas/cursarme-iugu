@@ -16,16 +16,6 @@ module.exports = () => {
     let controller = {};
 
 
-    controller.showxDukaInvoices = (req, res) => {
-        if (parcelas.getUnidade(req.params.unidade)){
-            parcelas.getInvoices(req.params.month,req.params.year,parcelas.unidades[req.params.unidade].query)
-                .then((recordset)=> res.json([recordset[0]]));
-        }else {
-            res.json([]);
-        }
-    };
-
-
     controller.showInvoice = (req,res) => {
         if (parcelas.getUnidade(req.params.unidade)) {
 
@@ -50,13 +40,32 @@ module.exports = () => {
         }
     };
 
+
+
     controller.invoiceDueDate = (req, res) => {
 
         if (parcelas.getUnidade(req.params.unidade)) {
             res.render('invoice',
                 {   unidade : req.params.unidade ,
                     codmovimento : req.params.movimento,
-                    parcela : req.params.parcela
+                    parcela : req.params.parcela,
+                    aviso: true
+                })
+        }else {
+            res.render('error', { error : { message : 'pagina nao encontrada' , status : '404'} })
+        }
+
+    };
+
+
+    controller.reproCessa = (req, res) => {
+
+        if (parcelas.getUnidade(req.params.unidade)) {
+            res.render('invoice',
+                {   unidade : req.params.unidade ,
+                    codmovimento : req.params.movimento,
+                    parcela : req.params.parcela,
+                    aviso: false
                 })
         }else {
             res.render('error', { error : { message : 'pagina nao encontrada' , status : '404'} })
@@ -66,17 +75,8 @@ module.exports = () => {
 
 
 
+
     controller.invoiceStatusChange = (req,res) => {
-
-        //{
-        //    "data": {
-        //    "subscription_id": "F4115E5E28AE4CCA941FCCCCCABE9A0A",
-        //        "status": "paid",
-        //        "id": "1757E1D7FD5E410A9C563024250015BF"
-        //},
-        //    "event": "invoice.status_changed"
-        //}
-
         if (req.body.data &&
             req.body.data.id &&
             req.body.event &&
@@ -106,15 +106,15 @@ module.exports = () => {
                 })
                 .catch((err) => {
                     if (err.message){
-                        res.status(500).json({msg: err.message});
+                        res.status(500).json({error: err.message});
                     }else
                     {
-                        res.status(500).json({msg: err});
+                        res.status(500).json({error: err});
                     }
                 })
 
         }else{
-            res.status(400).json({msg: "informacao incompleta"});
+            res.status(400).json({error: "informacao incompleta"});
         }
 
 
@@ -145,9 +145,9 @@ module.exports = () => {
                 .then((url) => res.status(201).send({url : url }))
                 .catch((err) => {
                     if (err.message){
-                        res.status(500).send(err.message);
+                        res.status(500).send({ error: err.message});
                     }else{
-                        res.status(500).json(err);
+                        res.status(500).json({ error: err});
                     }
                 });
         }else {
@@ -192,13 +192,13 @@ module.exports = () => {
                 })
                 .catch((err) => {
                     if (err.message){
-                        res.status(500).json({err : err.message});
+                        res.status(500).json({error : err.message});
                     }else{
-                        res.status(500).json(err);
+                        res.status(500).json({ error : err });
                     }
             });
         }else {
-            res.status(400).json({ err : 'unidade não configurada'});
+            res.status(400).json({ error : 'unidade não configurada'});
         }
     };
 

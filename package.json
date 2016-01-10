@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "TZ=America/Sao_Paulo node ./bin/www",
     "postinstall": "bower install"
   },
   "dependencies": {

@@ -6,6 +6,8 @@ angular.module('xDukaBoletos')
         $scope.boleto = null;
         $scope.valid =  false;
 
+        $scope.erro = null;
+
 
         $scope.click = function(codunidade,codmovimento,parcela){
             regeraBoleto(ngProgress,$resource,$scope,_, codunidade,codmovimento,parcela)
@@ -25,13 +27,15 @@ function regeraBoleto(ngProgress,$resource,$scope,_, codunidade,codmovimento,par
         promise.then(function(data) {
             $scope.boleto = data.url;
             $scope.valid = true;
+
             ngProgress.complete();
 
+        }).catch(function(error){
+            "use strict";
+            $scope.erro = error.data.error;
+            ngProgress.complete();
         });
 
-        promise.catch(function(response, status) {  
-            console.log("The request failed with response " + response + " and status code " + status);
-        });
 
     }else{
         $scope.valid = false;

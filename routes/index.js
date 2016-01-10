@@ -15,13 +15,16 @@ router.get('/boletos/regerar/:unidade/:movimento/:parcela', controller.processIn
 router.post('/boletos/retorno/:unidade/:movimento/:parcela' , controller.invoiceStatusChange);
 /* tela para regerar boleto*/
 router.get('/boletos/atrasado/:unidade/:movimento/:parcela', controller.invoiceDueDate);
+/* tela para o financeiro reprocessar o boleto do aluno */
+router.get('/boletos/reprocessar/:unidade/:movimento/:parcela', controller.invoiceDueDate);
+/* mostrar a invoice*/
 router.get('/boletos/get/:unidade/:invoiceid',passport.authenticate('bearer', { session: false }), controller.showInvoice);
 
 /* GET home page. */
 router.get('/', (req, res, next) => res.render('index'));
-
+/* busca invoices por cpf. */
 router.get('/cobranca/:cpf', controllerCPF.getInvoices );
-
+/* retorna o frame de cpf que pode ser usado por site externo. */
 router.get('/frame', function(req, res, next) {
     res.render('frame');
 });

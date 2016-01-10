@@ -117,7 +117,7 @@
                 <p>
                   <b>{{cobranca.status}}</b>
                 </p>
-                <a ng-show="cobranca.liberado && !cobranca.ajuizado" target="_blank" ng-href="http://ieses.xduka.com.br/Boleto.aspx?Call=/Boleto/Home/VisualizarBoleto?CodUnidade={{cobranca.codUnidade}}&CodMovimento={{cobranca.codMovimento}}&Parcela={{cobranca.parcela}}">
+                <a ng-show="cobranca.liberado && !cobranca.ajuizado" target="_blank" ng-href="{{cobranca.xDevExternalUrl}}">
                   <div class="ui green button">
                     <i class="print icon"></i>Imprimir
                   </div>
