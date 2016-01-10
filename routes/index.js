@@ -16,7 +16,7 @@ router.post('/boletos/retorno/:unidade/:movimento/:parcela' , controller.invoice
 /* tela para regerar boleto*/
 router.get('/boletos/atrasado/:unidade/:movimento/:parcela', controller.invoiceDueDate);
 /* tela para o financeiro reprocessar o boleto do aluno */
-router.get('/boletos/reprocessar/:unidade/:movimento/:parcela', controller.invoiceDueDate);
+router.get('/boletos/reprocessar/:unidade/:movimento/:parcela', controller.reproCessa);
 /* mostrar a invoice*/
 router.get('/boletos/get/:unidade/:invoiceid',passport.authenticate('bearer', { session: false }), controller.showInvoice);
 
