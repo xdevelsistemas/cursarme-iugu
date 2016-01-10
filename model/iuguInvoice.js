@@ -70,17 +70,13 @@ let getInvoice = (unidade,invoiceId) => {
 
 let createInvoice = (unidade,boleto) => {
     let iuguUnidade = iugu(unidade.key,'v1');
-    const today = new Date().setHours(0,0,0,0);
+    const today = new Date();
     const vencimento = new Date(boleto.DataVencimento);
     let itensInvoice = [];
 
 
     let isLate = () => {
-        let _vencimento = vencimento;
-        let _today = today;
-        _vencimento.setHours(0,0,0,0);
-
-        var timeDiff = _vencimento - _today;
+        var timeDiff = vencimento - today;
         var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
         return diffDays < 0
     };
