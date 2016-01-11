@@ -44,7 +44,7 @@ apiGetErr =  (error,res) => {
 
 
 
-apiCall =  (endpoint) => ( entity , method ,reqData ) => {
+apiCall =  (endpoint,token) => ( entity , method ,reqData ) => {
 
     var uri = endpoint;
     var body = null;
@@ -60,9 +60,6 @@ apiCall =  (endpoint) => ( entity , method ,reqData ) => {
 
 
         uri: uri ,
-        //auth: {
-        //    bearer: proxy.rest.api_token
-        //},
         headers : {
             'Content-Type': 'application/json'
         },
@@ -70,6 +67,12 @@ apiCall =  (endpoint) => ( entity , method ,reqData ) => {
         json : body,
         resolveWithFullResponse: true
     };
+
+    if (token) {
+        options.auth = {
+            bearer: token
+        }
+    }
 
     return reqPro(options).then(function(resp){
         var  data = {};

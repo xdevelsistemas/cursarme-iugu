@@ -24,23 +24,25 @@
 <!--<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>-->
 <!--<![endif]&ndash;&gt;-->
 
-<div id="g1" ng-controller="BoletosController">
+<div id="g1" ng-controller="BoletosController" ng-cloak>
   <div class="ui one item menu">
     <a class="active item">
       <i class="home icon"></i> Boletos por CPF
     </a>
   </div>
-  <div ng-cloak ng-show="dados.alunos.length==0" class="ui segment page grid">
+  <div ng-show="dados.alunos.length==0" class="ui segment page grid">
     <div class="eight centered column">
-      <div ng-show="!valid" class="ui negative message">
+      <div ng-show="!valid && processado" class="ui negative message">
         <i class="close icon"></i>
         <div class="header">
           Opa, não deu certo
         </div>
         <p>Digite o cpf embaixo, porque não consegui identificar da última vez.
         </p>
+        <p ng-show="errMessage">Detalhe do erro : {{errMessage}}
+        </p>
       </div>
-      <div ng-show="valid" class="ui warning message">
+      <div ng-show="valid && processado" class="ui warning message">
         <i class="close icon"></i>
         <div class="header">
           Aviso
@@ -60,7 +62,7 @@
       </form>
     </div>
   </div>
-  <div ng-cloak class="ui segment" ng-repeat="aluno in dados.alunos track by $index">
+  <div class="ui segment" ng-repeat="aluno in dados.alunos track by $index">
     <h1 class="ui header"><i class="student icon"></i> {{aluno.nomeAluno}}</h1>
     <hr/>
     <div accordion class="ui styled fluid accordion" ng-repeat="contrato in aluno.mensalidades track by $index">
@@ -79,7 +81,7 @@
             </div>
             <div class="column">
               <div class="ui horizontal segment center aligned">
-                <div ng-show="contrato.pendencias>0" class="ui red label">{{contrato.pendencias}} Pendencia(s)</div>
+                <div ng-show="contrato.pendencias>0 && cpf !== ''" class="ui red label">{{contrato.pendencias}} Pendencia(s)</div>
                 <div ng-show="contrato.pendencias==0" class="ui green label">Em dia</div>
               </div>
             </div>

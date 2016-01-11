@@ -10,11 +10,23 @@ module.exports = () => {
 
     controller.getInvoices = (req, res) => {
         model.getInvoices(req.params.cpf)
-            .then( (response) => res.status(response.status).json(response.data))
+            .then( (response) => {
+
+                let dados = response.data;
+                //if (response.data.length > 0){
+                //    dados = response.data.map(d=> {
+                //        let saida = d;
+                //        saida.cobrancas = d.cobrancas.filter(e=> e.xDevExternalUrl);
+                //        return saida;
+                //    });
+                //}
+
+                res.status(response.status).json(dados);
+
+            })
             .catch(
                 (error) => {
-                    console.log(error.message);
-                    res.json([]);
+                    res.json({error : error.message});
                 }
             );
     };

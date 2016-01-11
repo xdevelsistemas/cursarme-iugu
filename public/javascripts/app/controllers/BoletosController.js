@@ -3,14 +3,21 @@
  */
 angular.module('xDukaBoletos')
     .controller('BoletosController',function($scope , $http, $resource , _ , ngProgress, $location ){
-        $scope.cpf = "";
+
+        $scope.cpf = $location.search().numCPF;
+        $scope.numCPF = null;
         $scope.valid = false;
+        $scope.processado = false;
 
 
         $scope.convert = function(inputFormat) {
             function pad(s) { return (s < 10) ? '0' + s : s; }
             var d = new Date(inputFormat.match(/\d+/)[0] * 1);
             return [pad(d.getDate()), pad(d.getMonth()+1), d.getFullYear()].join('/');
+        };
+
+        $scope.click = function(cpf){
+            callBoletos(ngProgress,$resource,$scope,_, $location, cpf)
         };
 
         $scope.formatMoney = function(inputFormat){
@@ -24,28 +31,20 @@ angular.module('xDukaBoletos')
             return 'R$ ' + s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - i).toFixed(c).slice(2) : "");
         };
 
-        $scope.click = function(inputFormat){
-            var cpf = inputFormat.replace(/\./g,'').replace(/\-/g,'').replace(/\//g,'');
-            $location.url("?numCPF="+cpf);
-            callBoletos(ngProgress,$resource,$scope,_, $location)
-        };
-
         callBoletos(ngProgress,$resource,$scope,_, $location)
+
 });
 
-function callBoletos(ngProgress,$resource,$scope,_,$location) {
-
-    
-    ngProgress.start();
-    var numCPF = $location.search().numCPF;
+function callBoletos(ngProgress,$resource,$scope,_,$location , cpf) {
+    var  numCPF = cpf ? cpf : $location.search().numCPF;
     if (numCPF){
+        ngProgress.start();
         var numCPFUnformat = numCPF.replace(/\./g,'').replace(/\-/g,'').replace(/\//g,'');
-
-        $scope.valid = true;
         var Cobranca = $resource('/cobranca/:numCPF');
         var promise  = Cobranca.query({numCPF : numCPFUnformat}).$promise;
 
-        promise.then(function(data) {
+        promise
+            .then(function(data) {
             var dados = [];
             var dgpAluno = _.groupBy(data,'nomeAluno');
             for (var keyNomeAluno in dgpAluno){
@@ -55,20 +54,27 @@ function callBoletos(ngProgress,$resource,$scope,_,$location) {
                             function(el){
                                 return $.extend(el,{'pendencias': _.size(_.where(el.cobrancas, {ajuizado: false, liberado: true}))});
                             })
-                })
+                });
             }
 
             $scope.dados = {'alunos' : dados };
+            $scope.valid = true;
+            $scope.processado = true;
             ngProgress.complete();
 
+        }).catch(function(response, status) {
+            $scope.valid = false;
+            $scope.dados = {'alunos' : [] };
+            $scope.processado = true;
+            ngProgress.complete();
+            $scope.errorMessage = response.error;
         });
 
-        promise.catch(function(response, status) {  
-            console.log("The request failed with response " + response + " and status code " + status);
-        });
+
 
     }else{
         $scope.valid = false;
+        $scope.processado = false;
         $scope.dados = {'alunos' : [] };
         ngProgress.complete();
     }
