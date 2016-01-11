@@ -330,6 +330,9 @@ let compareInvoices = (invoiceIugu ,invoice ) => {
 let createInvoice = (unidade,objectInvoice) => {
     let iuguUnidade = iugu(unidade.key,'v1');
 
+
+
+
     let calcTotal = (itens) => {
         if (itens.length > 0) {
             return _.sum(itens,'price_cents');
@@ -338,7 +341,7 @@ let createInvoice = (unidade,objectInvoice) => {
         }
     };
 
-    if (calcTotal(objectInvoice.itensInvoice) > 0) {
+    if (calcTotal(objectInvoice.items) > 0) {
         return iuguUnidade.invoices.create(objectInvoice)
     }else {
         throw new Error("O total do boleto é zero");
