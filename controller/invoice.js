@@ -42,6 +42,38 @@ module.exports = () => {
 
 
 
+    //controller.compareInvoice = (req, res) => {
+    //    if (parcelas.getUnidade(req.params.unidade)){
+    //
+    //        const codUnidade = req.params.unidade;
+    //        const codMovimento = req.params.movimento;
+    //        const parcela = req.params.parcela;
+    //
+    //        parcelas.getInvoice(codUnidade,codMovimento,parcela)
+    //            .then((response) => {
+    //                if (response){
+    //                    return iuguInvoice.compareInvoice(parcelas.getUnidade(req.params.unidade),response[0].xDevCobId,response[0]);
+    //                }else{
+    //                    return false;
+    //                }
+    //            })
+    //            .then((result) => {
+    //                return res.json({result : result})
+    //            })
+    //            .catch((err) => {
+    //                if (err.message){
+    //                    res.status(500).send({ error: err.message});
+    //                }else{
+    //                    res.status(500).json({ error: err});
+    //                }
+    //            });
+    //    }else {
+    //        res.status(400).json({err : 'unidade não configurada'});
+    //    }
+    //};
+
+
+
     controller.invoiceDueDate = (req, res) => {
 
         if (parcelas.getUnidade(req.params.unidade)) {

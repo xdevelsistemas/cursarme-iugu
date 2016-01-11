@@ -2,6 +2,7 @@
 const iugu = require('iugu');
 const _ = require('lodash');
 const multaPercentual = 2;
+let  reErrStatus = /^[4|5]/;
 let format = require('string-format');
 format.extend(String.prototype);
 
@@ -45,14 +46,14 @@ format.extend(String.prototype);
 //    "DataVencimento": "2016-01-15T00:00:00.000Z"
 //}
 
-let dataAtualFormatada = (data) => {
-    var dia = data.getDate();
+let dataFormatada = (data) => {
+    var dia = data.getUTCDate();
     if (dia.toString().length == 1)
         dia = "0"+dia;
-    var mes = data.getMonth()+1;
+    var mes = data.getUTCMonth()+1;
     if (mes.toString().length == 1)
         mes = "0"+mes;
-    var ano = data.getFullYear();
+    var ano = data.getUTCFullYear();
     return dia+"/"+mes+"/"+ano;
 };
 
@@ -68,18 +69,13 @@ let getInvoice = (unidade,invoiceId) => {
 };
 
 
-let createInvoice = (unidade,boleto) => {
-    let iuguUnidade = iugu(unidade.key,'v1');
+let populateInvoice = (boleto) => {
     const today = new Date();
     const vencimento = new Date(boleto.DataVencimento);
     let itensInvoice = [];
 
 
-    let isLate = () => {
-        var timeDiff = vencimento - today;
-        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-        return diffDays < 0
-    };
+
 
     let price_cents = (valor) => {
         //retornando em centavos no formato string
@@ -127,7 +123,7 @@ let createInvoice = (unidade,boleto) => {
     };
 
     let addValorJuros = (list) => {
-        if(isLate() && boleto.JurosCorrigido > 0){
+        if(isLate(vencimento,today) && boleto.JurosCorrigido > 0){
             list.push({
                 description: "Multa e Juros por atraso",
                 quantity: "1",
@@ -162,7 +158,7 @@ let createInvoice = (unidade,boleto) => {
         let valor = Number(boleto.BolsaCondicional);
         valor  = valor > 0 ? valor *(-1) : valor;
 
-        if(valor != 0 && !isLate()){
+        if(valor != 0 && !isLate(vencimento,today)){
             list.push({
                 description: "Desconto Condicionado ao Vencimento: [{}]".format(boleto.BolsaCondicionalMotivo),
                 quantity: "1",
@@ -192,7 +188,7 @@ let createInvoice = (unidade,boleto) => {
     };
 
     let getVencimento = () => {
-      return dataAtualFormatada(isLate() ? today : vencimento);
+        return dataFormatada(isLate(vencimento,today) ? today : vencimento);
     };
 
     let getEmail = () => {
@@ -234,7 +230,115 @@ let createInvoice = (unidade,boleto) => {
         }
     };
 
-    if (calcTotal(itensInvoice) > 0) {
+    return objectInvoice;
+};
+
+
+//let compareInvoice = (unidade,invoiceId,objectInvoice) => {
+//    //todo analisar nese ponto
+//    if (invoiceId && objectInvoice) {
+//        return getInvoice(unidade,invoiceId)
+//        .then((response) => {
+//            if (reErrStatus.test(response.statusCode)){
+//                return false;
+//            }else{
+//                let remoteInvoice = response.body;
+//                return _compareInvoices(remoteInvoice,populateInvoice(objectInvoice));
+//            }
+//        }).catch((error) => {
+//            return false;
+//        });
+//    }else  {
+//        return Promise.resolve(false);
+//    }
+//
+//};
+
+let isLate = (vencimento,today) => {
+    var timeDiff = vencimento - today;
+    var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+    return diffDays < 0
+};
+
+
+let compareInvoices = (invoiceIugu ,invoice ) => {
+    let  boletoPreenchido = populateInvoice(invoice);
+    let compareItens = (itensA,itensB) => {
+        // sempre terá itens nos boletos
+        if (itensA && itensB){
+            if (itensA.length !== itensB.length){
+                return false;
+            }else {
+                itensA.forEach((element, index, array) => {
+                    if (element.description !== itensB[index].description){
+                        return false;
+                    }
+                    if (element.quantity.toString() !== itensB[index].quantity){
+                        return false;
+                    }
+                    if (element.price_cents.toString() !== itensB[index].price_cents){
+                        return false;
+                    }
+                });
+            }
+        }else {
+            return false;
+        }
+
+        return true;
+    };
+
+    if (invoiceIugu.email !== boletoPreenchido.email){
+        return false;
+    }
+    //todo verificar se está atrasado
+    if (dataFormatada(new Date(invoiceIugu.due_date)) !== boletoPreenchido.due_date){
+        return false;
+    }
+
+    if (invoiceIugu.notification_url !== boletoPreenchido.notification_url){
+        return false;
+    }
+    //todo abrir chamado com iugu e verificar
+    //if (objectA.expired_url !== objectB.expired_url){
+    //    return false;
+    //}
+    //if (objectA.fines !== objectB.fines){
+    //    return false;
+    //}
+    //
+
+
+    if (invoiceIugu.discount_cents.toString() !== boletoPreenchido.discount_cents){
+        return false;
+    }
+    //if (objectA.per_day_interest.toString() !== objectB.per_day_interest){
+    //    return false;
+    //}
+    if (invoiceIugu.ignore_due_email.toString() !== boletoPreenchido.ignore_due_email){
+        return false;
+    }
+    if (invoiceIugu.payable_with !== boletoPreenchido.payable_with){
+        return false;
+    }
+
+    return compareItens(invoiceIugu.items,boletoPreenchido.items);
+};
+
+
+
+let createInvoice = (unidade,objectInvoice) => {
+    let iuguUnidade = iugu(unidade.key,'v1');
+
+    let calcTotal = (itens) => {
+        if (itens.length > 0) {
+            return _.sum(itens,'price_cents');
+        }else {
+            return 0;
+        }
+    };
+
+    if (calcTotal(objectInvoice.itensInvoice) > 0) {
         return iuguUnidade.invoices.create(objectInvoice)
     }else {
         throw new Error("O total do boleto é zero");
@@ -255,6 +359,9 @@ let cancelInvoice = (unidade,invoiceId) => {
 
 
 module.exports = {
+    isLate: isLate,
+    compareInvoices: compareInvoices,
+    populateInvoice: populateInvoice,
     createInvoice : createInvoice,
     cancelInvoice : cancelInvoice,
     getInvoice : getInvoice

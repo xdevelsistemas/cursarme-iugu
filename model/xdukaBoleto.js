@@ -58,11 +58,21 @@ let invoiceControllerCall = (codUnidade,codMovimento,parcela)  => {
                     throw new Error('Boleto não encontrado');
                 }
 
-                return Promise.all([Promise.resolve(invoice),iuguInvoice.getInvoice(codUnidade,invoice.xDevCobId)]);
+                return Promise.all([Promise.resolve(invoice),iuguInvoice.getInvoice(getUnidade(codUnidade),invoice.xDevCobId)]);
             })
             .then((processed) => {
                 let invoice = processed[0];
                 let invoiceIugu = processed[1];
+
+                //todo colocar validacao de boleto ok
+                if (invoiceIugu && invoice
+                    && !reErrStatus.test(invoiceIugu.statusCode)
+                    && !iuguInvoice.isLate(new Date(invoiceIugu.due_date),new Date())
+                    && iuguInvoice.compareInvoices(invoiceIugu.body,invoice)){
+                    throw new Error("O Boleto já está atualizado com os dados da cobrança e com data a vencer");
+                }
+
+
 
                 if ( invoiceIugu && invoiceIugu.status == 'paid') throw new Error('O Boleto já foi pago');
                 //if ( invoiceIugu && invoiceIugu.status == 'pending' && (new Date(invoiceIugu.due_date) > new Date().setHours(0,0,0,0) ) ) throw new Error('Já existe um boleto em atividade');
@@ -70,7 +80,7 @@ let invoiceControllerCall = (codUnidade,codMovimento,parcela)  => {
                 return Promise.resolve(invoice);
             })
             .then((invoice)=> {
-                return  Promise.all([iuguInvoice.createInvoice(getUnidade(codUnidade), invoice),
+                return  Promise.all([iuguInvoice.createInvoice(iuguInvoice.getUnidade(codUnidade),iuguInvoice.populateInvoice(invoice)),
                     iuguInvoice.cancelInvoice(getUnidade(codUnidade), invoice.xDevCobId)]
                 )
             })

@@ -17,6 +17,8 @@ router.post('/boletos/retorno/:unidade/:movimento/:parcela' , controller.invoice
 router.get('/boletos/atrasado/:unidade/:movimento/:parcela', controller.invoiceDueDate);
 /* tela para o financeiro reprocessar o boleto do aluno */
 router.get('/boletos/reprocessar/:unidade/:movimento/:parcela', controller.reproCessa);
+/* verifica se tem diferença entre o movimento do sistema e o boleto associado  */
+//router.get('/boletos/comparar/:unidade/:movimento/:parcela' ,passport.authenticate('bearer', { session: false }),controller.compareInvoice);
 /* mostrar a invoice*/
 router.get('/boletos/get/:unidade/:invoiceid',passport.authenticate('bearer', { session: false }), controller.showInvoice);
 
