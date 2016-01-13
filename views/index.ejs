@@ -53,7 +53,7 @@
       <form class="ui form segment">
         <h4 class="ui dividing header  center aligned">Informe seu CPF</h4>
         <div class="field  center aligned">
-          <input type="text" ng-model="cpf" placeholder="Digite seu CPF" ui-br-cpf-mask>
+          <input ng-keyup="$event.keyCode == 13 && click(cpf)" type="text" ng-model="cpf" placeholder="Digite seu CPF" ui-br-cpf-mask>
         </div>
 
         <div class="sixteen centered column" ng-click="click(cpf)">
@@ -121,7 +121,7 @@
                 </p>
                 <a ng-show="cobranca.liberado && !cobranca.ajuizado" target="_blank" ng-href="{{cobranca.xDevExternalUrl}}">
                   <div class="ui green button">
-                    <i class="print icon"></i>Imprimir
+                    <i class="unhide icon"></i>Visualizar
                   </div>
                 </a>
               </td>
