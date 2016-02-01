@@ -10,12 +10,15 @@ let  reErrStatus = /^[4|5]/;
 
 
 let unidades = {
-    cariacica : {query : 'CodUnidade = 215', key: '62bee72f9892240958e39dac0e344341'},
+    cariacica : {query : 'CodUnidade in (215,219)', key: '62bee72f9892240958e39dac0e344341'},
+    ieses_tec : {query : 'CodUnidade = 218', key: '92bcfe401fb6c1a52f6d93a08f32037d'},
     sao_mateus : {query : 'CodUnidade in (217,221)', key: '044325bfff65d13e8330641f39bbb830'}
 };
 
 let unidadesCodigos = {
     '215' : 'cariacica',
+    '219' : 'cariacica',
+    '218' : 'ieses_tec',
     '217' : 'sao_mateus',
     '221' : 'sao_mateus'
 };
@@ -101,6 +104,53 @@ let invoiceControllerCall = (codUnidade,codMovimento,parcela)  => {
     }
 };
 
+let getPendentInvoices = (month,year,unidadeQuery) =>
+    connect(config)
+        .then(() => {
+            let query = `select *
+                        from xdevbi_financeiro where month(DataVencimento) = {}
+                        and  year(DataVencimento) = {}
+                        and Cancelada = 0
+                        and  PagoValor = 0
+                        and  {}
+                        and xDevCobId is not null
+                        and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
+                        or (CodUnidade = 218 and CodCaixa in (2))
+                        or (CodUnidade = 217 and CodCaixa in (3))
+                        or (CodUnidade = 219 and CodCaixa in (6))
+                        or (CodUnidade = 221 and CodCaixa in (2)))`;
+
+            return new mssql.Request()
+                .query(query.format(month, year, unidadeQuery))
+        })
+        .then((result) => { mssql.close(); return Promise.resolve(result)})
+        .catch((err) => { mssql.close(); throw err;});
+
+
+
+let getPayedInvoices = (month,year,unidadeQuery) =>
+    connect(config)
+        .then(() => {
+            let query = `select *
+                        from xdevbi_financeiro where month(DataVencimento) = {}
+                        and  year(DataVencimento) = {}
+                        and Cancelada = 0
+                        and  PagoValor > 0
+                        and  {}
+                        and xDevCobId is not null
+                        and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
+                        or (CodUnidade = 218 and CodCaixa in (2))
+                        or (CodUnidade = 217 and CodCaixa in (3))
+                        or (CodUnidade = 219 and CodCaixa in (6))
+                        or (CodUnidade = 221 and CodCaixa in (2)))`;
+
+            return new mssql.Request()
+                .query(query.format(month, year, unidadeQuery))
+        })
+        .then((result) => { mssql.close(); return Promise.resolve(result)})
+        .catch((err) => { mssql.close(); throw err;});
+
+
 
 let getInvoices = (month,year,unidadeQuery,reprocess) =>
     connect(config)
@@ -113,7 +163,9 @@ let getInvoices = (month,year,unidadeQuery,reprocess) =>
                         and  Ajuizada = 0
                         and  {}
                         and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
+                        or (CodUnidade = 218 and CodCaixa in (2))
                         or (CodUnidade = 217 and CodCaixa in (3))
+                        or (CodUnidade = 219 and CodCaixa in (6))
                         or (CodUnidade = 221 and CodCaixa in (2)))`;
 
             if (!reprocess) {
@@ -226,6 +278,9 @@ module.exports = {
     getInvoice : getInvoice,
     addTransaction : addTransaction,
     payInvoice: payInvoice,
-    invoiceControllerCall: invoiceControllerCall
+    invoiceControllerCall: invoiceControllerCall,
+    getPayedInvoices: getPayedInvoices,
+    getPendentInvoices: getPendentInvoices
+
 
 };
