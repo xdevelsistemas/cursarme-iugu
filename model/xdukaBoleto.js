@@ -127,15 +127,15 @@ let getPendentInvoices = (month,year,unidadeQuery) =>
         .catch((err) => { mssql.close(); throw err;});
 
 
-
+//testar se rotina está cancelando também as remessas canceladas
 let getPayedInvoices = (month,year,unidadeQuery) =>
     connect(config)
         .then(() => {
             let query = `select *
                         from xdevbi_financeiro where month(DataVencimento) = {}
                         and  year(DataVencimento) = {}
-                        and Cancelada = 0
-                        and  PagoValor > 0
+                        and  ( ( Cancelada = 0
+                        and  PagoValor > 0 ) or ( Cancelada <> 0 ) )
                         and  {}
                         and xDevCobId is not null
                         and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
