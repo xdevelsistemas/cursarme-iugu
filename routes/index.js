@@ -5,6 +5,7 @@ let passport = require('passport');
 const controller = require('../controller/invoice')();
 const controllerCPF = require('../controller/invoiceCPF')();
 
+
 router.get('/boletos/reprocessarpendentes/:unidade/:year/:month',passport.authenticate('bearer', { session: false }), (req,res) => controller.processPendentInvoices(req,res) );
 router.get('/boletos/reprocessarpagos/:unidade/:year/:month',passport.authenticate('bearer', { session: false }), (req,res) => controller.processPayedInvoices(req,res) );
 /* processa todos os boletos que nao criaram vinculo com iugu  */

@@ -57,6 +57,24 @@ let dataFormatada = (data) => {
     return dia+"/"+mes+"/"+ano;
 };
 
+let getAllInvoices = (unidade) => {
+    let iuguUnidade = iugu(unidade.key,'v1');
+
+    return iuguUnidade.invoices.list();
+};
+
+let getAllInvoicesPaginated = (unidade,start,limit,created_from,created_to) => {
+    let iuguUnidade = iugu(unidade.key,'v1');
+    return iuguUnidade.invoices.listPaginated(limit,start,created_from,created_to);
+};
+
+
+let getAllwithDrawRequest = (unidade) => {
+    let iuguUnidade = iugu(unidade.key,'v1');
+
+    return iuguUnidade.withDrawRequests.list();
+};
+
 
 let getInvoice = (unidade,invoiceId) => {
     let iuguUnidade = iugu(unidade.key,'v1');
@@ -367,7 +385,10 @@ module.exports = {
     populateInvoice: populateInvoice,
     createInvoice : createInvoice,
     cancelInvoice : cancelInvoice,
-    getInvoice : getInvoice
+    getInvoice : getInvoice,
+    getAllInvoices: getAllInvoices,
+    getAllwithDrawRequest: getAllwithDrawRequest,
+    getAllInvoicesPaginated: getAllInvoicesPaginated
 };
 
 

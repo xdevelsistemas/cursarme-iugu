@@ -128,6 +128,11 @@ let getPendentInvoices = (month,year,unidadeQuery) =>
 
 
 //testar se rotina está cancelando também as remessas canceladas
+//and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
+//or (CodUnidade = 218 and CodCaixa in (2))
+//or (CodUnidade = 217 and CodCaixa in (3))
+//or (CodUnidade = 219 and CodCaixa in (6))
+//or (CodUnidade = 221 and CodCaixa in (2)))
 let getPayedInvoices = (month,year,unidadeQuery) =>
     connect(config)
         .then(() => {
@@ -137,12 +142,7 @@ let getPayedInvoices = (month,year,unidadeQuery) =>
                         and  ( ( Cancelada = 0
                         and  PagoValor > 0 ) or ( Cancelada <> 0 ) )
                         and  {}
-                        and xDevCobId is not null
-                        and ( (CodUnidade = 215 and CodCaixa in (2,3,6))
-                        or (CodUnidade = 218 and CodCaixa in (2))
-                        or (CodUnidade = 217 and CodCaixa in (3))
-                        or (CodUnidade = 219 and CodCaixa in (6))
-                        or (CodUnidade = 221 and CodCaixa in (2)))`;
+                        and xDevCobId is not null`;
 
             return new mssql.Request()
                 .query(query.format(month, year, unidadeQuery))

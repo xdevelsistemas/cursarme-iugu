@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html lang="en" ng-app="xDukaBoletos" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en" ng-app="xDukaBoletos" class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Boletos</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/lib/select2/select2.css">
+    <link rel="stylesheet" href="/lib/html5-boilerplate/dist/css/normalize.css">
+    <link rel="stylesheet" href="/lib/html5-boilerplate/dist/css/main.css">
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/lib/ngprogress/ngProgress.css">
+    <link rel="stylesheet" href="/lib/c3/c3.min.css">
+    <link rel="stylesheet" href="/stylesheets/app.css">
+    <link rel="stylesheet" href="/lib/select2/select2-bootstrap.css">
+    <link rel="stylesheet" href="/lib/select2/select2.css">
+    <script src="/lib/html5-boilerplate/dist/js/vendor/modernizr-2.8.3.min.js"></script>
+</head>
+<body>
+
+<!--&lt;!&ndash;[if lt IE 7]>-->
+<!--<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>-->
+<!--<![endif]&ndash;&gt;-->
+
+<div class="container">
+    <div class="bs-callout bs-callout-info">
+        <h1>Movimentos Financeiros</h1>
+    </div>
+    <div id="g1" class="bs-callout bs-callout-info" ng-controller="DashboardController"  ng-init="loadDashBoard" ng-cloak>
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                Selecione a Unidade que pretende analisar
+            </div>
+            <div class="panel-body">
+                <select class="col-md-12" ui-select2 ng-model="unidade_selecionada" ng-change="filtrar(unidade_selecionada)">
+                    <option  ng-repeat="unidade in unidades" value="{{unidade.value}}">{{unidade.text}}</option>
+                </select>
+            </div>
+        </div>
+        <h3>Movimentos do Mês</h3>
+        <div id="chart">
+        </div>
+        <div class="panel panel-info" ng-cloak ng-if="sumaryInvoices.pending.count > 0">
+            <div class="panel-heading">
+                <h3>Resumo e Comparações</h3>
+            </div>
+            <div>
+                <table class="table">
+                    <thead style="font-weight: bold">
+                    <td>Status</td>
+                    <td>[Mês Anterior] Quantidade</td>
+                    <td>[Mês Anterior] Total (em R$)</td>
+                    <td>Quantidade</td>
+                    <td>Total (em R$)</td>
+                    <td>Diferença (%)</td>
+                    </thead>
+                    <hr>
+                    <tbody>
+                    <tr>
+                        <td>Pendentes e Expirados</td>
+                        <td>{{(sumaryInvoicesBefore.pending.count + sumaryInvoicesBefore.expired.count)}}</td>
+                        <td>{{(sumaryInvoicesBefore.pending.sum + sumaryInvoicesBefore.expired.sum) | currency : 'R$' : 2}}</td>
+                        <td>{{(sumaryInvoices.pending.count + sumaryInvoices.expired.count)}}</td>
+                        <td>{{(sumaryInvoices.pending.sum + sumaryInvoices.expired.sum) | currency : 'R$' : 2}}</td>
+                        <td>{{calcDiffPercent(sumaryInvoicesBefore.pending.sum + sumaryInvoicesBefore.expired.sum, sumaryInvoices.pending.sum + sumaryInvoices.expired.sum) | number : 2}}</td>
+                    </tr>
+                    <tr>
+                        <td>Pagos</td>
+                        <td>{{sumaryInvoicesBefore.paid.count}}</td>
+                        <td>{{sumaryInvoicesBefore.paid.sum | currency : 'R$' : 2}}</td>
+                        <td>{{sumaryInvoices.paid.count}}</td>
+                        <td>{{sumaryInvoices.paid.sum | currency : 'R$' : 2}}</td>
+                        <td>{{calcDiffPercent(sumaryInvoicesBefore.paid.sum, sumaryInvoices.paid.sum) | number : 2}}</td>
+                    </tr>
+                    <tr>
+                        <td>Parcialmente Pagos</td>
+                        <td>{{sumaryInvoicesBefore.partially_paid.count}}</td>
+                        <td>{{sumaryInvoicesBefore.partially_paid.sum | currency : 'R$' : 2}}</td>
+                        <td>{{sumaryInvoices.partially_paid.count}}</td>
+                        <td>{{sumaryInvoices.partially_paid.sum | currency : 'R$' : 2}}</td>
+                        <td>{{calcDiffPercent(sumaryInvoicesBefore.partially_paid.sum, sumaryInvoices.partially_paid.sum) | number : 2}}</td>
+                    </tr>
+                    <tr>
+                        <td>Cancelados</td>
+                        <td>{{sumaryInvoicesBefore.canceled.count}}</td>
+                        <td>{{sumaryInvoicesBefore.canceled.sum | currency : 'R$' : 2}}</td>
+                        <td>{{sumaryInvoices.canceled.count}}</td>
+                        <td>{{sumaryInvoices.canceled.sum | currency : 'R$' : 2}}</td>
+                        <td>{{calcDiffPercent(sumaryInvoicesBefore.canceled.sum, sumaryInvoices.canceled.sum) | number : 2}}</td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="panel panel-info" ng-repeat="tran in transacoes">
+            <div class="panel-heading">
+                <h3>{{tran.banco.bank}}</h3>
+                <span>Conta tipo:{{tran.banco.account_type}} | Agencia: {{tran.banco.bank_ag}} / Conta: {{tran.banco.bank_cc}}</span>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12" ng-repeat="dado in tran.dados">
+                    <div class="col-md-4">
+                        Pedido do Saque: <span>{{(dado.created_at | date:'dd/MM/yyyy' )}}</span>
+                    </div>
+                    <div class=" col-md-4">
+                        <div style="text-align: right;">
+                            {{dado.amount}}
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped {{dado.status_percent === 100 ? 'progress-bar-success' : 'progress-bar-info active' }}" role="progressbar" aria-valuenow="{{dado.status_percent}}"
+                                 aria-valuemin="0" aria-valuemax="100" style="width:{{dado.status_percent}}%">
+                                <span style="color:{{dado.status_percent === 0 ? 'black' : 'white' }}">{{dado.status_percent}}% {{dado.status_text}}</span>
+                            </div>
+                        </div>
+
+                    </div>
+                    <hr class="col-md-12">
+                </div>
+
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <h5>Total no mês : {{tran.soma/100 | currency : 'R$ ' : 2 }}</h5>
+            </div>
+        </div>
+
+
+
+
+
+    </div>
+</div>
+
+<!-- In production use:
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
+-->
+
+<script src="/lib/jquery/dist/jquery.min.js"></script>
+<script src="/lib/angular/angular.min.js"></script>
+<script src="/lib/angular-i18n/angular-locale_pt-br.js"></script>
+<script src="/lib/lodash/lodash.js"></script>
+<script src="/lib/select2/select2.min.js"></script>
+<script src="/lib/select2/select2_locale_pt-BR.js"></script>
+<script src="/lib/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/lib/semantic/dist/semantic.min.js"></script>
+<script src="/lib/semantic/dist/components/accordion.min.js"></script>
+<script src="/lib/angular-route/angular-route.js"></script>
+<script src="/lib/angular-resource/angular-resource.min.js"></script>
+<script src="/lib/angular-route/angular-route.min.js"></script>
+<script src="/lib/angular-semantic-ui/dist/angular-semantic-ui.js"></script>
+<script src="/lib/angular-input-masks/angular-input-masks.br.min.js"></script>
+<script src="/lib/ngprogress/build/ngProgress.min.js"></script>
+<script src="/lib/d3/d3.min.js"></script>
+<script src="/lib/c3/c3.min.js"></script>
+<script src="/lib/c3-angular/c3-angular.min.js"></script>
+<script src="/javascripts/app/directives/accordion.js"></script>
+<script src="/javascripts/app/services/services.js"></script>
+<script src="/lib/angular-ui-select2/src/select2.js"></script>
+<script src="/javascripts/app/app.js"></script>
+<script src="/javascripts/app/controllers/DashboardController.js"></script>
+<!--<script type="application/javascript">-->
+    <!--$(document).ready(function() {-->
+        <!--$("select").select2({ width: 'resolve' });-->
+    <!--});-->
+<!--</script>-->
+</body>
+</html>
