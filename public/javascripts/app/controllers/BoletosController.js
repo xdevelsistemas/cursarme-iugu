@@ -52,7 +52,7 @@ function callBoletos(ngProgress,$resource,$scope,_,$location , cpf) {
                     'mensalidades' :
                         _.each(_.toArray(_.groupBy(dgpAluno[keyNomeAluno],['nomeUnidade','nomeCurso','codMovimento','tipoCobranca']))[0],
                             function(el){
-                                return $.extend(el,{'pendencias': _.size(_.where(el.cobrancas, {ajuizado: false, liberado: true}))});
+                                return $.extend(el,{'pendencias': _.size(_.filter(el.cobrancas, {ajuizado: false, liberado: true}))});
                             })
                 });
             }
