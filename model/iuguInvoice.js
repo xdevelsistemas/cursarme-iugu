@@ -7,6 +7,15 @@ let format = require('string-format');
 format.extend(String.prototype);
 
 
+
+let calcTotal = (itens) => {
+    if (itens.length > 0) {
+        return itens.map(d=>d.price_cents = Number(d.price_cents)).reduce((a,b) => a + b );
+    }else {
+        return 0;
+    }
+};
+
 // exemplo de boleto
 //{
 //    "CodUnidade": 215,
@@ -240,13 +249,7 @@ let populateInvoice = (boleto) => {
         payable_with: 'bank_slip'
     };
 
-    let calcTotal = (itens) => {
-        if (itens.length > 0) {
-            return _.sum(itens,'price_cents');
-        }else {
-            return 0;
-        }
-    };
+
 
     return objectInvoice;
 };
@@ -351,13 +354,7 @@ let createInvoice = (unidade,objectInvoice) => {
 
 
 
-    let calcTotal = (itens) => {
-        if (itens.length > 0) {
-            return _.sum(itens,'price_cents');
-        }else {
-            return 0;
-        }
-    };
+
 
     if (calcTotal(objectInvoice.items) > 0) {
         return iuguUnidade.invoices.create(objectInvoice)
