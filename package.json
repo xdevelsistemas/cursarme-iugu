@@ -19,6 +19,7 @@
     "ejs": "^2.3.4",
     "express": "~4.13.1",
     "express-session": "^1.13.0",
+    "extend": "^3.0.0",
     "iugu": "git+https://github.com/xdevelsistemas/iugu-node.git",
     "jade": "~1.11.0",
     "lodash": "^4.3.0",
