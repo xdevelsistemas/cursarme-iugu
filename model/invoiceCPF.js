@@ -2,7 +2,7 @@
 const iugu = require('iugu');
 const _ = require('lodash');
 const key = require('../config/tokens').xduka;
-const api = require('../services/apiCall')('http://ieses-intermed.xduka.com.br',null);
+const api = require('../services/apiCall')('http://educacional-intermed.xduka.com.br',null);
 let format = require('string-format');
 format.extend(String.prototype);
 
