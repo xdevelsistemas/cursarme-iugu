@@ -10,7 +10,7 @@ let  reErrStatus = /^[4|5]/;
 
 
 let unidades = {
-    cariacica : {query : 'CodUnidade in (215,219)', key: '62bee72f9892240958e39dac0e344341'},
+    cariacica : {query : 'CodUnidade in (215,219,222)', key: '62bee72f9892240958e39dac0e344341'},
     ieses_tec : {query : 'CodUnidade = 218', key: '92bcfe401fb6c1a52f6d93a08f32037d'},
     sao_mateus : {query : 'CodUnidade in (217,221)', key: '044325bfff65d13e8330641f39bbb830'}
 };
@@ -18,6 +18,7 @@ let unidades = {
 let unidadesCodigos = {
     '215' : 'cariacica',
     '219' : 'cariacica',
+    '222' : 'cariacica',
     '218' : 'ieses_tec',
     '217' : 'sao_mateus',
     '221' : 'sao_mateus'
@@ -118,6 +119,7 @@ let getPendentInvoices = (month,year,unidadeQuery) =>
                         or (CodUnidade = 218 and CodCaixa in (2))
                         or (CodUnidade = 217 and CodCaixa in (3))
                         or (CodUnidade = 219 and CodCaixa in (6))
+                        or (CodUnidade = 222 and CodCaixa in (6))
                         or (CodUnidade = 221 and CodCaixa in (2)))`;
 
             return new mssql.Request()
@@ -166,6 +168,7 @@ let getInvoices = (month,year,unidadeQuery,reprocess) =>
                         or (CodUnidade = 218 and CodCaixa in (2))
                         or (CodUnidade = 217 and CodCaixa in (3))
                         or (CodUnidade = 219 and CodCaixa in (6))
+                        or (CodUnidade = 222 and CodCaixa in (6))
                         or (CodUnidade = 221 and CodCaixa in (2)))`;
 
             if (!reprocess) {
